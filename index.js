@@ -9,9 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
-
-
 const uri = "mongodb+srv://art_and_craft_store:H0YNFqU8G3DkrQux@cluster0.begblt8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,8 +25,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    const itemCollection = client.db("craft_items_db").collection('all_craft_items')
+
+
     app.get('/allItems', async (req, res) => {
-      const cursor = spotCollection.find()
+      const cursor = itemCollection.find()
 
       const result = await cursor.toArray()
 
@@ -40,7 +40,7 @@ async function run() {
     app.post('/allItems', async (req, res) => {
       const newItem = req.body;
 
-      const result = await spotCollection.insertOne(newItem);
+      const result = await itemCollection.insertOne(newItem);
 
       res.send(result);
     })
