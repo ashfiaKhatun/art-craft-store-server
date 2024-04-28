@@ -28,12 +28,22 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    app.get('/allItems', async (req, res) => {
+      const cursor = spotCollection.find()
 
+      const result = await cursor.toArray()
 
-    
+      res.send(result);
 
+    })
 
+    app.post('/allItems', async (req, res) => {
+      const newItem = req.body;
 
+      const result = await spotCollection.insertOne(newItem);
+
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -49,12 +59,12 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send("Art and Craft Server is running")
+  res.send("Art and Craft Server is running")
 })
 
 
 app.listen(port, () => {
-    console.log(`Art an Craft Server is running on port: ${port}`);
+  console.log(`Art an Craft Server is running on port: ${port}`);
 })
 
 
