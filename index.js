@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ['http://localhost:5173'],
+  origin: ['http://localhost:5173', "https://art-craft-store-801c5.web.app"],
   credentials: true,
   optionSuccessStatus: 200,
 }
@@ -87,46 +87,65 @@ async function run() {
 
 
       const craft = {
-          $set: {
-            item_name: updatedItems.item_name,
-            sub_category: updatedItems.sub_category,
-            description: updatedItems.description,
-            price: updatedItems.price,
-            customization: updatedItems.customization,
-            time: updatedItems.time,
-            stock_status: updatedItems.stock_status,
-            rating: updatedItems.rating,
-            photo: updatedItems.photo,
-            email: updatedItems.email,
-            name: updatedItems.name,
+        $set: {
+          item_name: updatedItems.item_name,
+          sub_category: updatedItems.sub_category,
+          description: updatedItems.description,
+          price: updatedItems.price,
+          customization: updatedItems.customization,
+          time: updatedItems.time,
+          stock_status: updatedItems.stock_status,
+          rating: updatedItems.rating,
+          photo: updatedItems.photo,
+          email: updatedItems.email,
+          name: updatedItems.name,
 
-          }
+        }
       }
 
       const result = await itemCollection.updateOne(filter, craft, options);
       res.send(result);
 
-  })
+    })
 
-  app.delete('/allItems/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) };
-    const result = await itemCollection.deleteOne(query);
-    res.send(result);
-})
+    app.delete('/allItems/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await itemCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    // sub category section
+
+    const subCategoryCollection = client.db("craft_items_db").collection('category_table')
+
+    app.get('/all-sub-categories', async (req, res) => {
+      const cursor = subCategoryCollection.find()
+
+      const result = await cursor.toArray()
+
+      res.send(result);
+
+    })
+
+    app.get('/all-sub-categories/title/:title', async (req, res) => {
+      const title = req.params.title;
+      const cursor = { sub_category: title };
+      const options = { upsert: true };
+      const result = await spotCollection.find(cursor, options).toArray();
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
   }
 }
 run().catch(console.dir);
-
-
 
 
 app.get('/', (req, res) => {
@@ -137,9 +156,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Art an Craft Server is running on port: ${port}`);
 })
-
-
-
-
-// username - art_and_craft_store
-// password - H0YNFqU8G3DkrQux
