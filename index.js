@@ -6,7 +6,23 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5173'],
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+})
+
+
 app.use(express.json());
 
 const uri = "mongodb+srv://art_and_craft_store:H0YNFqU8G3DkrQux@cluster0.begblt8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
